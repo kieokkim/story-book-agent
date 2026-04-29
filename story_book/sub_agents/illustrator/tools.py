@@ -7,7 +7,7 @@ client = OpenAI()
 
 
 async def generate_images(tool_context:ToolContext):
-    story_output = tool_context.state.get("story_write_output")
+    story_output = tool_context.state.get("story_writer_output")
     pages = story_output.get("scenes")
     
     existing_artifacts = await tool_context.list_artifacts()

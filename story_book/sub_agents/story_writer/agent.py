@@ -11,5 +11,5 @@ story_writer_agent = Agent(
     instruction=STORY_WRITER_PROMPT,
     model=MODEL,
     output_schema=StoryPlanOutput,
-    output_key="story_write_agent",
+    output_key="story_writer_output",
 )
