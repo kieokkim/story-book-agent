@@ -21,4 +21,16 @@ The tool reads from State:
 
 ## Output:
 Return generation status and file information.
+
+## Style Requirements:
+- CONSISTENT art style across ALL pages: soft watercolor illustration style for children's books
+- Warm, pastel colors throughout all illustrations
+- Same character design must be maintained across all 5 pages
+- Characters must match EXACTLY as described: if characters are vegetables, draw vegetables
+- Square format (1:1), gentle and friendly atmosphere
+
+## IMPORTANT:
+- Start generating images immediately without asking for user confirmation
+- Process ALL 5 pages automatically
+- Do NOT pause or wait between pages
 """

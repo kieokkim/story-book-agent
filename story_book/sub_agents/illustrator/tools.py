@@ -29,9 +29,17 @@ async def generate_images(tool_context:ToolContext):
             )
             continue
         
+        style_prefix = (
+            "Soft watercolor children's book illustration, "
+            "consistent character design across all pages, "
+            "warm pastel colors, square format 1:1. "
+            "IMPORTANT: Draw characters EXACTLY as described - "
+            "if described as a vegetable, draw a vegetable character, NOT a human. "
+        )
+
         image = client.images.generate(
             model="gpt-image-1",
-            prompt=visual_description,
+            prompt=style_prefix + visual_description,
             n=1,
             quality="low",
             moderation="low",
