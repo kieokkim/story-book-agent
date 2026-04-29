@@ -7,23 +7,23 @@ client = OpenAI()
 
 
 async def generate_images(tool_context:ToolContext):
-    prompt_builder_output = tool_context.state.get("prompt_builder_output")
-    optimized_prompts = prompt_builder_output.get("optimized_prompts")
-
+    story_output = tool_context.state.get("story_write_output")
+    pages = story_output.get("scenes")
+    
     existing_artifacts = await tool_context.list_artifacts()
 
     generated_images = []
     
-    for prompt in optimized_prompts:
-        scene_id = prompt.get("scene_id")
-        enhanced_prompt = prompt.get("enhanced_prompt")
-        filename = f"scene_{scene_id}_image.jpeg"
+    for page in pages:
+        page_id = page.get("id")
+        visual_description = page.get("visual_description")
+        filename = f"page_{page_id}_image.jpeg"
 
         if filename in existing_artifacts:
             generated_images.append(
                 {
-                    "scene_id": scene_id,
-                    "prompt": enhanced_prompt[:100],
+                    "page_id": page_id,
+                    "prompt": visual_description[:100],
                     "filename": filename
                 }
             )
@@ -31,7 +31,7 @@ async def generate_images(tool_context:ToolContext):
         
         image = client.images.generate(
             model="gpt-image-1",
-            prompt=enhanced_prompt,
+            prompt=visual_description,
             n=1,
             quality="low",
             moderation="low",
@@ -53,8 +53,8 @@ async def generate_images(tool_context:ToolContext):
 
         generated_images.append(
             {
-                "scene_id": scene_id,
-                "prompt": enhanced_prompt[:100],
+                "page_id": page_id,
+                "prompt": visual_description[:100],
                 "filename": filename
             }
         )
