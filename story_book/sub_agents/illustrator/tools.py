@@ -3,71 +3,71 @@ from openai import OpenAI
 from google.genai import types
 from google.adk.tools.tool_context import ToolContext
 
-client = OpenAI()
+style_prefix = (
+    "Soft watercolor children's book illustration, "
+    "consistent character design across all pages, "
+    "warm pastel colors, square format 1:1. "
+    "IMPORTANT: Draw characters EXACTLY as described in the visual description. "
+    "Follow the visual description precisely - character type, appearance, and setting must match exactly. "
+)
 
 
-async def generate_images(tool_context:ToolContext):
+async def generate_page_image(tool_context:ToolContext, page_id: int):
+    """
+    Generate illustration for a specific page.
+    
+    Args:
+        page_id: The page number to generate (1-5)
+    """
+
+    client = OpenAI()
+
     story_output = tool_context.state.get("story_writer_output")
     pages = story_output.get("scenes")
     
+
+    page = next((p for p in pages if p.get("id") == page_id), None)
+    if not page:
+        return {"error": f"Page {page_id} not found in story_writer_output"}
+
+    visual_description = page.get("visual_description")
+    filename = f"page_{page_id}_image.jpeg"
+
     existing_artifacts = await tool_context.list_artifacts()
+    if filename in existing_artifacts:
+        return {
+            "page_id": page_id,
+            "prompt": visual_description[:100],
+            "filename": filename,
+            "status": "already exists",
+        }
 
-    generated_images = []
-    
-    for page in pages:
-        page_id = page.get("id")
-        visual_description = page.get("visual_description")
-        filename = f"page_{page_id}_image.jpeg"
 
-        if filename in existing_artifacts:
-            generated_images.append(
-                {
-                    "page_id": page_id,
-                    "prompt": visual_description[:100],
-                    "filename": filename
-                }
-            )
-            continue
-        
-        style_prefix = (
-            "Soft watercolor children's book illustration, "
-            "consistent character design across all pages, "
-            "warm pastel colors, square format 1:1. "
-            "IMPORTANT: Draw characters EXACTLY as described - "
-            "if described as a vegetable, draw a vegetable character, NOT a human. "
+    image = client.images.generate(
+        model="gpt-image-1",
+        prompt=style_prefix + visual_description,
+        n=1,
+        quality="low",
+        moderation="low",
+        output_format="jpeg",
+        background="opaque",
+        size="1024x1024", 
+    )
+
+    image_bytes = base64.b64decode(image.data[0].b64_json)
+
+    artifact = types.Part(
+        inline_data= types.Blob(
+            mime_type="image/jpeg",
+            data=image_bytes
         )
+    )
 
-        image = client.images.generate(
-            model="gpt-image-1",
-            prompt=style_prefix + visual_description,
-            n=1,
-            quality="low",
-            moderation="low",
-            output_format="jpeg",
-            background="opaque",
-            size="1024x1024", 
-        )
-
-        image_bytes = base64.b64decode(image.data[0].b64_json)
-
-        artifact = types.Part(
-            inline_data= types.Blob(
-                mime_type="image/jpeg",
-                data=image_bytes
-            )
-        )
-
-        await tool_context.save_artifact(filename=filename, artifact=artifact)
-
-        generated_images.append(
-            {
-                "page_id": page_id,
-                "prompt": visual_description[:100],
-                "filename": filename
-            }
-        )
+    await tool_context.save_artifact(filename=filename, artifact=artifact)
 
     return {
-        "total_images": len(generated_images),
-        "status":"complete",
+        "page_id": page_id,
+        "prompt": visual_description[:100],
+        "filename": filename,
+        "status": "complete",
     }

@@ -1,18 +1,17 @@
 from google.adk.agents import Agent
 from google.adk.models.lite_llm import LiteLlm
-from .prompt import STORY_WRITER_DESCRIPTION, STORY_WRITER_PROMPT
-from .models import StoryPlanOutput
+from ..prompt import ILLUSTRATOR_DESCRIPTION, get_page_illustrator_prompt
+from ..tools import generate_page_image
 from story_book.callbacks import before_agent_callback, after_agent_callback
 
 MODEL = LiteLlm(model="openai/gpt-4o")
 
-story_writer_agent = Agent(
-    name="StoryWriterAgent",
-    description=STORY_WRITER_DESCRIPTION,
-    instruction=STORY_WRITER_PROMPT,
+page2_agent=Agent(
+    name="IllustratorAgent_Page2",
+    description=ILLUSTRATOR_DESCRIPTION,
+    instruction=get_page_illustrator_prompt(2),
     model=MODEL,
-    output_schema=StoryPlanOutput,
-    output_key="story_writer_output",
+    tools=[generate_page_image],
     before_agent_callback=before_agent_callback,
     after_agent_callback=after_agent_callback,
 )

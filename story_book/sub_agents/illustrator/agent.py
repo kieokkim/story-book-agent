@@ -1,15 +1,18 @@
-from google.adk.agents import Agent
-from google.adk.models.lite_llm import LiteLlm
-from .prompt import ILLUSTRATOR_DESCRIPTION, ILLUSTRATOR_PROMPT
-from .tools import generate_images
+from google.adk.agents import ParallelAgent
+from .page_agents.page1_agent import page1_agent
+from .page_agents.page2_agent import page2_agent
+from .page_agents.page3_agent import page3_agent
+from .page_agents.page4_agent import page4_agent
+from .page_agents.page5_agent import page5_agent
 
-MODEL = LiteLlm(model="openai/gpt-4o")
-
-illustrator_agent = Agent(
+illustrator_agent = ParallelAgent(
     name="IllustratorAgent",
-    description=ILLUSTRATOR_DESCRIPTION,
-    instruction=ILLUSTRATOR_PROMPT,
-    model=MODEL,
-    output_key="illustrator_output",
-    tools=[generate_images]
+    description="Generates all 5 illustrations simultaneously",
+    sub_agents=[
+        page1_agent,
+        page2_agent,
+        page3_agent,
+        page4_agent,
+        page5_agent,
+    ]
 )
