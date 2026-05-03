@@ -2,6 +2,8 @@ from google.adk.agents import Agent
 from google.adk.tools.agent_tool import AgentTool
 from google.adk.models.lite_llm import LiteLlm
 
+from story_book.tools import get_story_output
+
 from .prompt import STORY_BOOK_DESCRIPTION, STORY_BOOK_PROMPT
 from .sub_agents.agent import asset_generator_agent
 
@@ -12,7 +14,10 @@ story_book_agent = Agent(
     model=MODEL,
     description=STORY_BOOK_DESCRIPTION,
     instruction=STORY_BOOK_PROMPT,
-    tools=[AgentTool(agent=asset_generator_agent)],
+    tools=[
+        AgentTool(agent=asset_generator_agent),
+        get_story_output,
+    ],
 )
 
 root_agent = story_book_agent

@@ -17,10 +17,10 @@ Collaborate with the user to create a personalized children's storybook.
    "주인공1: [정확한이름]([정확한종류]), 주인공2: [정확한이름]([정확한종류]), 주제: [주제]"
 
 ## IMPORTANT - After asset_generator_agent completes:
-- Read story_writer_output from State
-- Display results using ONLY the exact content from story_writer_output
-- NEVER paraphrase, rewrite, or add content to story_text or visual_description
-- Copy story_text and visual_description VERBATIM from State
+- Call get_story_output tool to retrieve the exact story content from State
+- Display results using ONLY the exact content returned by get_story_output
+- NEVER paraphrase, rewrite, or add content
+- Copy story_text and visual_description VERBATIM from the tool's return value
 
 Display in this format:
 ---

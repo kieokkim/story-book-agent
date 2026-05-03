@@ -24,14 +24,14 @@ async def generate_page_image(tool_context:ToolContext, page_id: int):
 
     story_output = tool_context.state.get("story_writer_output")
     pages = story_output.get("scenes")
-    
+    topic = story_output.get("topic", "story").replace(" ", "_")[:20]
 
     page = next((p for p in pages if p.get("id") == page_id), None)
     if not page:
         return {"error": f"Page {page_id} not found in story_writer_output"}
 
     visual_description = page.get("visual_description")
-    filename = f"page_{page_id}_image.jpeg"
+    filename = f"{topic}_page_{page_id}_image.jpeg"
 
     existing_artifacts = await tool_context.list_artifacts()
     if filename in existing_artifacts:
